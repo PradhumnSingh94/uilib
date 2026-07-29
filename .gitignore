@@ -1,0 +1,22 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+.next
+storybook-static
+
+# Turbo
+.turbo
+
+# TypeScript
+*.tsbuildinfo
+
+# Generated (rebuilt from Figma tokens)
+packages/tokens/src/generated/*.css
+packages/tokens/src/generated/*.ts
+!packages/tokens/src/generated/.gitkeep
+
+# Env
+.env
+.env.local
