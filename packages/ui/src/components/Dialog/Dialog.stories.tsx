@@ -88,11 +88,10 @@ export const Confirmation: Story = {
     );
 
     await waitFor(() => {
-      expect(within(document.body).getByRole('dialog')).toBeInTheDocument();
+      const dialog = within(document.body).getByRole('dialog');
+      expect(dialog).toHaveAttribute('aria-modal', 'true');
     });
-
-    const dialog = within(document.body).getByRole('dialog');
-    await expect(dialog).toHaveAttribute('aria-modal', 'true');
+    
     await expect(within(document.body).getByText('Delete account')).toBeInTheDocument();
 
     // Close with Escape

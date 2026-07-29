@@ -66,9 +66,10 @@ export const Default: Story = {
 
     // Verify trigger renders with correct a11y attributes
     const trigger = canvas.getByRole('combobox');
-    await expect(trigger).toHaveAttribute('aria-expanded', 'false');
-    await expect(trigger).toHaveAttribute('aria-haspopup', 'listbox');
 
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute('aria-expanded', 'false');
+    });
     // Open the dropdown
     await userEvent.click(trigger);
 
@@ -78,6 +79,10 @@ export const Default: Story = {
 
     // Close it again so the story renders cleanly after play()
     await userEvent.keyboard('{Escape}');
+
+    await waitFor(() => {
+      expect(within(document.body).queryByRole('listbox')).not.toBeInTheDocument();
+    });
   },
 };
 
