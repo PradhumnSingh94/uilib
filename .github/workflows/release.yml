@@ -23,7 +23,7 @@ jobs:
         with:
           fetch-depth: 0
           # Use a PAT so the version commit triggers CI again
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -51,5 +51,5 @@ jobs:
           title: 'chore: version packages'
           commit: 'chore: version packages'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
