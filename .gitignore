@@ -12,10 +12,10 @@ storybook-static
 # TypeScript
 *.tsbuildinfo
 
-# Generated (rebuilt from Figma tokens)
-packages/tokens/src/generated/*.css
-packages/tokens/src/generated/*.ts
-!packages/tokens/src/generated/.gitkeep
+# Generated tokens — rebuilt from figma/tokens.json
+# Ignore the real generated files but keep the stub
+packages/tokens/src/generated/tokens.css
+# Do NOT ignore tokens.ts — the stub must be committed
 
 # Env
 .env
