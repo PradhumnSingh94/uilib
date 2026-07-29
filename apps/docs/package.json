@@ -5,7 +5,8 @@
   "scripts": {
     "storybook": "storybook dev -p 6006",
     "build": "storybook build",
-    "clean": "rm -rf storybook-static"
+    "clean": "rm -rf storybook-static",
+    "chromatic": "chromatic --project-token=$CHROMATIC_PROJECT_TOKEN"
   },
   "dependencies": {
     "@uilib/tokens": "workspace:*",

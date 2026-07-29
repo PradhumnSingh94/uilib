@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  # Cancel in-progress runs for the same PR/branch
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: Typecheck, test, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Fetch full history — Turbo remote cache needs this
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          # Tells Node/pnpm to authenticate with GitHub Packages
+          registry-url: https://npm.pkg.github.com
+          scope: '@uilib'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      # - name: Test
+      #   run: pnpm test
+
+      - name: Build
+        run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  chromatic:
+    name: Publish Storybook to Chromatic
+    runs-on: ubuntu-latest
+    # Only run after CI passes
+    needs: ci
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@uilib'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build tokens and ui first
+        run: pnpm build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Chromatic
+        run: pnpm --filter @uilib/docs chromatic
+        env:
+          CHROMATIC_PROJECT_TOKEN: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

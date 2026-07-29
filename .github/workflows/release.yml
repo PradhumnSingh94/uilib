@@ -1,0 +1,57 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    name: Version and publish
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Needed to push version commits back to main
+      contents: write
+      # Needed to create GitHub releases
+      packages: write
+      # Needed for changeset PR comments
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # Use a PAT so the version commit triggers CI again
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: https://npm.pkg.github.com
+          scope: '@uilib'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create release PR or publish
+        uses: changesets/action@v1
+        with:
+          # When changesets are present — opens a "Version Packages" PR
+          # When that PR is merged — runs pnpm release to publish
+          publish: pnpm release
+          version: pnpm version
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
