@@ -84,21 +84,28 @@ export const Confirmation: Story = {
     const canvas = within(canvasElement);
 
     await userEvent.click(
-      canvas.getByRole('button', { name: 'Delete account' }),
+        canvas.getByRole('button', { name: 'Delete account' }),
     );
 
+    // Wait for dialog to appear
     await waitFor(() => {
         expect(within(document.body).getByRole('dialog')).toBeInTheDocument();
     });
-    await expect(within(document.body).getByText('Delete account')).toBeInTheDocument();
+
+    // Scope to the dialog — avoids matching the trigger button text
+    const dialog = within(document.body).getByRole('dialog');
+
+    await waitFor(() => {
+        expect(within(dialog).getByRole('heading', { name: 'Delete account' })).toBeInTheDocument();
+    });
 
     // Close with Escape
     await userEvent.keyboard('{Escape}');
 
     await waitFor(() => {
-      expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument();
+        expect(within(document.body).queryByRole('dialog')).not.toBeInTheDocument();
     });
-  },
+    },
 };
 
 // ─── All sizes ────────────────────────────────────────────────────────────────
